@@ -51,39 +51,56 @@ def format_result(result):
     )
 
 
+class BucketManifestOptions(PipelineOptions):
+  @classmethod
+  def _add_argparse_args(cls, parser):
+    # Use add_value_provider_argument for arguments to be templatable
+    # Use add_argument as usual for non-templatable arguments
+    parser.add_value_provider_argument(
+        '--input',
+        default='gs://dataflow-samples/shakespeare/kinglear.txt',
+        help='Path of the file to read from')
+    parser.add_argument(
+        '--output',
+        required=True,
+        help='Output file to write results to.')
+
 def run(argv=None):
     """Main entry point; defines and runs the copying pipeline."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--input",
-        dest="input",
-        default="./scripts/test_data.txt",
-        help="Input file to process.",
-    )
-    parser.add_argument(
-        "--output",
-        dest="output",
-        required=True,
-        help="Output file to write results to.",
-    )
-    parser.add_argument(
-        "--global_config", dest="global_config", help="global configuration"
-    )
-    known_args, pipeline_args = parser.parse_known_args(argv)
-
-    pipeline_options = PipelineOptions(pipeline_args)
-    pipeline_options.view_as(SetupOptions).save_main_session = True
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument(
+    #     "--input",
+    #     dest="input",
+    #     default="./scripts/test_data.txt",
+    #     help="Input file to process.",
+    # )
+    # parser.add_argument(
+    #     "--output",
+    #     dest="output",
+    #     required=True,
+    #     help="Output file to write results to.",
+    # )
+    # parser.add_argument(
+    #     "--global_config", dest="global_config", help="global configuration"
+    # )
+    # known_args, pipeline_args = parser.parse_known_args(argv)
+    my_options = PipelineOptions().view_as(BucketManifestOptions)
+    
+    pipeline_options = PipelineOptions()
+    
+    #pipeline_options = PipelineOptions(pipeline_args)
+    #pipeline_options.view_as(SetupOptions).save_main_session = True
     p = beam.Pipeline(options=pipeline_options)
 
-    input_path = known_args.input
+    #input_path = known_args.input
 
     # Read the text file[pattern] into a PCollection.
     lines = p | "read" >> ReadFromText(
-        file_pattern=input_path, skip_header_lines=1
+        file_pattern=my_options.input, skip_header_lines=1
     )
     result = lines | "copy" >> beam.ParDo(FileCopyingDoFn())
     formated_result = result | "format" >> beam.Map(format_result)
-    formated_result | "write" >> WriteToText(known_args.output)
+    formated_result | "write" >> WriteToText(my_options.output)
     prog = p.run()
     prog.wait_until_finish()
 
