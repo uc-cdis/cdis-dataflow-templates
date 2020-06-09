@@ -19,16 +19,6 @@ from bucket_manifest.bucket import get_bucket_manifest
 
 FILE_HEADERS = ["bucket", "file_name", "size"]
 
-# def get_bucket_manifest(bucket_name):
-#     storage_client = storage.Client()
-#     bucket = storage_client.get_bucket(bucket_name)
-#     blobs = bucket.list_blobs()
-#     result = []
-#     for blob in blobs:
-#         result.append("{}\t{}\t{}".format(bucket_name, blob.name, blob.size))
-#     return result
-
-
 class RefactorDict(beam.DoFn):
     def __init__(self):
         self._buffer = []
@@ -96,13 +86,12 @@ def run(argv=None):
         formated_result | "write" >> WriteToText(contact_options.output)
     else:
         parser = argparse.ArgumentParser()
-        # parser.add_argument(
-        #     "--input",
-        #     dest="input",
-        #     default="./scripts/test_data.txt",
-        #     help="Input file to process.",
-        # )
-        objects = get_bucket_manifest("dcf-integration-test")
+        parser.add_argument(
+            "--input",
+            dest="input",
+            default="dcf-integration-test",
+            help="Input file to process.",
+        )
         parser.add_argument(
             "--output",
             dest="output",
@@ -114,6 +103,7 @@ def run(argv=None):
         pipeline_options.view_as(SetupOptions).save_main_session = True
         p = beam.Pipeline(options=pipeline_options)
 
+        objects = get_bucket_manifest(known_args.input)
         lines = (
             p
             | beam.Create(objects))
