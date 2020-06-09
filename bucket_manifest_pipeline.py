@@ -12,11 +12,22 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions
 from apache_beam.io import ReadFromText
 from apache_beam.io import WriteToText
+from google.cloud import storage
 
 # from bucket_manifest.settings import FILE_HEADERS
 from bucket_manifest.bucket import get_bucket_manifest
 
 FILE_HEADERS = ["bucket", "file_name", "size"]
+
+# def get_bucket_manifest(bucket_name):
+#     storage_client = storage.Client()
+#     bucket = storage_client.get_bucket(bucket_name)
+#     blobs = bucket.list_blobs()
+#     result = []
+#     for blob in blobs:
+#         result.append("{}\t{}\t{}".format(bucket_name, blob.name, blob.size))
+#     return result
+
 
 class RefactorDict(beam.DoFn):
     def __init__(self):
@@ -91,6 +102,7 @@ def run(argv=None):
         #     default="./scripts/test_data.txt",
         #     help="Input file to process.",
         # )
+        objects = get_bucket_manifest("dcf-integration-test")
         parser.add_argument(
             "--output",
             dest="output",
@@ -104,7 +116,7 @@ def run(argv=None):
 
         lines = (
             p
-            | beam.Create(["test_bucket\taaa\t10"]))
+            | beam.Create(objects))
         
         result = lines | "copy" >> beam.ParDo(RefactorDict())
         formated_result = result | "format" >> beam.Map(format_result)
@@ -113,7 +125,7 @@ def run(argv=None):
     prog = p.run()
     prog.wait_until_finish()
 
-
+# python bucket_manifest_pipeline.py --runner DataflowRunner     --project dcf-integration     --staging_location gs://dcf-dataflow-bucket/staging     --temp_location gs://dcf-dataflow-bucket/temp  --region us-east1 --output gs://dcf-dataflow-bucket/output --setup_file ./setup.py
 if __name__ == '__main__':
     logger = logging.getLogger().setLevel(logging.INFO)
     run()
