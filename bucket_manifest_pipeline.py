@@ -15,9 +15,9 @@ from apache_beam.io import WriteToText
 from google.cloud import storage
 
 # from bucket_manifest.settings import FILE_HEADERS
-from bucket_manifest.bucket import get_bucket_manifest
+from bucket_manifest.bucket import get_bucket_manifest, compute_md5
 
-FILE_HEADERS = ["bucket", "file_name", "size"]
+FILE_HEADERS = ["bucket", "file_name", "size", "md5"]
 
 class RefactorDict(beam.DoFn):
     def __init__(self):
@@ -30,15 +30,17 @@ class RefactorDict(beam.DoFn):
         words = text_line.split("\t")
         fi = dict(zip(FILE_HEADERS, words))
         fi["size"] = int(fi["size"])
+        fi["md5"] = compute_md5(fi.get("bucket"), fi.get("file_name"))
 
         return [(fi, "processed")]
 
 def format_result(result):
   (fi, datalog) = result
-  return "%s\t%s\t%d" % (
+  return "%s\t%s\t%d\t%s" % (
       fi.get("bucket"),
       fi.get("file_name"),
-      fi.get("size")
+      fi.get("size"),
+      fi.get("md5")
   )
 
 class ContactUploadOptions(PipelineOptions):
@@ -65,7 +67,7 @@ def run(argv=None):
     - Format Dictionary
     - Commit to Firestore and/or BigQuery
     """
-    if 1==0:
+    if 0==0:
         # Initialize runtime parameters as object
         contact_options = PipelineOptions().view_as(ContactUploadOptions)
 
