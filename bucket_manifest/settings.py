@@ -1,1 +1,1 @@
-FILE_HEADERS = ["bucket", "file_name", "size"]
+FILE_HEADERS = ["bucket", "key", "size"]

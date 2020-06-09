@@ -17,9 +17,9 @@ from google.cloud import storage
 # from bucket_manifest.settings import FILE_HEADERS
 from bucket_manifest.bucket import get_bucket_manifest, compute_md5
 
-FILE_HEADERS = ["bucket", "file_name", "size", "md5"]
+FILE_HEADERS = ["bucket", "key", "size", "md5"]
 
-class RefactorDict(beam.DoFn):
+class ComputeMD5(beam.DoFn):
     def __init__(self):
         self._buffer = []
 
@@ -30,29 +30,32 @@ class RefactorDict(beam.DoFn):
         words = text_line.split("\t")
         fi = dict(zip(FILE_HEADERS, words))
         fi["size"] = int(fi["size"])
-        fi["md5"] = compute_md5(fi.get("bucket"), fi.get("file_name"))
+
+        try:
+            fi["md5"] = compute_md5(fi.get("bucket"), fi.get("key"))
+        except Exception as e:
+            fi["md5"] = str(e)
 
         return [(fi, "processed")]
 
 def format_result(result):
-  (fi, datalog) = result
+  fi, _ = result
   return "%s\t%s\t%d\t%s" % (
       fi.get("bucket"),
-      fi.get("file_name"),
+      fi.get("key"),
       fi.get("size"),
       fi.get("md5")
   )
 
-class ContactUploadOptions(PipelineOptions):
+class BucketManifestOptions(PipelineOptions):
     """
     Runtime Parameters given during template execution
-    path and organization parameters are necessary for execution of pipeline
-    campaign is optional for committing to bigquery
+    bucket, pub_sub and output parameters are necessary for execution of pipeline
     """
     @classmethod
     def _add_argparse_args(cls, parser):
-        parser.add_value_provider_argument(
-            '--path',
+        parser.add_argument(
+            '--bucket',
             type=str,
             help='Path of the file to read from')
         parser.add_value_provider_argument(
@@ -69,7 +72,7 @@ def run(argv=None):
     """
     if 0==0:
         # Initialize runtime parameters as object
-        contact_options = PipelineOptions().view_as(ContactUploadOptions)
+        bucket_manifest_options = PipelineOptions().view_as(BucketManifestOptions)
 
         pipeline_options = PipelineOptions()
         # Save main session state so pickled functions and classes
@@ -77,15 +80,15 @@ def run(argv=None):
         pipeline_options.view_as(SetupOptions).save_main_session = True
         # Beginning of the pipeline
         p = beam.Pipeline(options=pipeline_options)
-        blob_list = get_bucket_manifest("dcf-integration-test")
+        blob_list = get_bucket_manifest(bucket_manifest_options.bucket)
     
         lines = (
             p
             | beam.Create(blob_list))
 
-        result = lines | "copy" >> beam.ParDo(RefactorDict())
+        result = lines | "copy" >> beam.ParDo(ComputeMD5())
         formated_result = result | "format" >> beam.Map(format_result)
-        formated_result | "write" >> WriteToText(contact_options.output)
+        formated_result | "write" >> WriteToText(bucket_manifest_options.output)
     else:
         parser = argparse.ArgumentParser()
         parser.add_argument(
@@ -110,7 +113,7 @@ def run(argv=None):
             p
             | beam.Create(objects))
         
-        result = lines | "copy" >> beam.ParDo(RefactorDict())
+        result = lines | "copy" >> beam.ParDo(ComputeMD5())
         formated_result = result | "format" >> beam.Map(format_result)
         formated_result | "write" >> WriteToText(known_args.output)
 
