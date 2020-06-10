@@ -4,11 +4,9 @@ from __future__ import print_function
 import setuptools
 
 REQUIRED_PACKAGES = [
-    "requests>=2.18.0<3.0.0",
-    "boto3>=1.9.111",
-    "google-cloud==0.34.0",
-    "google-cloud-storage==1.6.0",
-    "setuptools==40.3.0",
+    "google-cloud-storage==1.28.0",
+    "google-cloud-pubsub==1.5.0",
+    "setuptools>=40.3.0"
 ]
 
 PACKAGE_NAME = "bucket_manifest"
