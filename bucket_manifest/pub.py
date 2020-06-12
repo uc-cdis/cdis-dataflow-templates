@@ -50,11 +50,8 @@ def pub(project_id, topic_id, data):
     Publishes a message to a Pub/Sub topic.
     Data sent to Cloud Pub/Sub must be a bytestring.
     """
-    logging.debug("DE: {}, {}".format(project_id, topic_id))
-    # [START pubsub_quickstart_pub_client]
     # Initialize a Publisher client.
     client = pubsub_v1.PublisherClient()
-    # [END pubsub_quickstart_pub_client]
     # Create a fully qualified identifier in the form of
     # `projects/{project_id}/topics/{topic_id}`
     topic_path = client.topic_path(project_id, topic_id)
