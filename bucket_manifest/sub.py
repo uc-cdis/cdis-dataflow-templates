@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 import argparse
+import logging
+import queue
+import time
 
 from google.cloud import pubsub_v1
 
 
-def sub(project_id, subscription_id):
+def sub(project_id, subscription_id, n_expected_messages, timeout=10000):
     """Receives messages from a Pub/Sub subscription."""
     # Initialize a Subscriber client
     subscriber_client = pubsub_v1.SubscriberClient()
@@ -12,26 +15,28 @@ def sub(project_id, subscription_id):
     # `projects/{project_id}/subscriptions/{subscription_id}`
     subscription_path = subscriber_client.subscription_path(project_id, subscription_id)
 
-    def callback(message):
-        print(
-            "Received message {} of message ID {}\n".format(message, message.message_id)
+    n_messages = 0
+
+    while n_messages < n_expected_messages:
+        # The subscriber pulls a specific number of messages.
+        response = subscriber_client.pull(subscription_path, max_messages=10)
+
+        ack_ids = []
+        n_messages += len(response.received_messages)
+
+        for received_message in response.received_messages:
+            logging.info("Received: {}".format(received_message.message.data))
+            ack_ids.append(received_message.ack_id)
+
+        # Acknowledges the received messages so they will not be sent again.
+        subscriber_client.acknowledge(subscription_path, ack_ids)
+
+        logging.info(
+            "Received and acknowledged {} messages. Done.".format(
+                len(response.received_messages)
+            )
         )
-        # Acknowledge the message. Unack'ed messages will be redelivered.
-        message.ack()
-        print("Acknowledged message {}\n".format(message.message_id))
-
-    streaming_pull_future = subscriber_client.subscribe(
-        subscription_path, callback=callback
-    )
-    print("Listening for messages on {}..\n".format(subscription_path))
-
-    try:
-        # Calling result() on StreamingPullFuture keeps the main thread from
-        # exiting while messages get processed in the callbacks.
-        streaming_pull_future.result()
-    except:  # noqa
-        streaming_pull_future.cancel()
-
+        
     subscriber_client.close()
 
 
