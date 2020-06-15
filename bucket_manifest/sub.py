@@ -103,10 +103,11 @@ if __name__ == "__main__":
     )
     parser.add_argument("project_id", help="Google Cloud project ID")
     parser.add_argument("subscription_id", help="Pub/Sub subscription ID")
-    parser.add_argument("bucket_name", required=True, help="Output bucket name")
-    parser.add_argument("authz_file", default=None, help="Authz data file")
+    parser.add_argument("n_expected_messages", help="Number of expected messages")
+    parser.add_argument("bucket_name", help="Output bucket name")
+    parser.add_argument("authz_file", required=False, help="Authz data file")
 
     args = parser.parse_args()
 
-    files = sub(args.project_id, args.subscription_id)
-    #write_messages_to_tsv(files, args.bucket_name, args.authz_file)
+    files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
+    write_messages_to_tsv(files, args.bucket_name, args.authz_file)
