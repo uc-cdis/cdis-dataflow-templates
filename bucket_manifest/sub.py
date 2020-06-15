@@ -9,8 +9,10 @@ from google.cloud import pubsub_v1
 
 import utils
 
+logging.basicConfig(level=logging.INFO)
 
-def sub(project_id, subscription_id, n_expected_messages=3, timeout=10000):
+
+def sub(project_id, subscription_id, n_expected_messages=1, timeout=10000):
     """Receives messages from a Pub/Sub subscription."""
     subscriber_client = pubsub_v1.SubscriberClient()
     subscription_path = subscriber_client.subscription_path(project_id, subscription_id)
@@ -30,8 +32,9 @@ def sub(project_id, subscription_id, n_expected_messages=3, timeout=10000):
                 logging.info("Received: {}".format(received_message.message.data))
                 ack_ids.append(received_message.ack_id)
 
-            # Acknowledges the received messages so they will not be sent again.
-            subscriber_client.acknowledge(subscription_path, ack_ids)
+            if ack_ids:
+                # Acknowledges the received messages so they will not be sent again.
+                subscriber_client.acknowledge(subscription_path, ack_ids)
 
             print(
                 "Received and acknowledged {} messages. Done.".format(
