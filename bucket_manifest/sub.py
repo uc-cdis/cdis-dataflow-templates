@@ -3,7 +3,7 @@ import argparse
 import logging
 import csv
 import json
-import datetime
+from datetime import datetime
 
 from urllib.parse import urlparse
 from google.cloud import pubsub_v1
@@ -14,7 +14,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 def sub(project_id, subscription_id, n_expected_messages=1, timeout=10000):
-    """Receives messages from a Pub/Sub subscription."""
+    """
+       Receive {n_expected_messages} messages from a Pub/Sub subscription.
+    """
     subscriber_client = pubsub_v1.SubscriberClient()
     # `projects/{project_id}/topics/{topic_id}`
     subscription_path = subscriber_client.subscription_path(project_id, subscription_id)
@@ -67,7 +69,7 @@ def sub(project_id, subscription_id, n_expected_messages=1, timeout=10000):
     return results
 
 
-def write_messages_to_tsv(files, n_total_messages, bucket_name, authz_file=None):
+def write_messages_to_tsv(files, bucket_name, authz_file=None):
     """
     Consume the sqs and write results to tsv manifest
     Args:
@@ -77,7 +79,6 @@ def write_messages_to_tsv(files, n_total_messages, bucket_name, authz_file=None)
                 "md5": "test_md5",
                 "size": 1
             }
-        n_total_messages(int): The expected number of messages being received
         bucket_name(str): bucket for uploading the manifest to
         authz_file(str): authz data file
     """
