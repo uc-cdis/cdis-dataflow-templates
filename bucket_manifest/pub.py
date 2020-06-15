@@ -37,7 +37,7 @@ def pub(project_id, topic_id, data):
     # Create a fully qualified identifier in the form of
     # `projects/{project_id}/topics/{topic_id}`
     topic_path = client.topic_path(project_id, topic_id)
-   
+
     # Keep track of the number of published messages.
     ref = dict({"num_messages": 0})
 

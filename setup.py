@@ -6,7 +6,7 @@ import setuptools
 REQUIRED_PACKAGES = [
     "google-cloud-storage==1.28.0",
     "google-cloud-pubsub==1.5.0",
-    "setuptools>=40.3.0"
+    "setuptools>=40.3.0",
 ]
 
 PACKAGE_NAME = "bucket_manifest"
