@@ -10,69 +10,35 @@ from google.cloud import pubsub_v1
 import utils
 
 
-def sub(project_id, subscription_id, n_expected_messages, timeout=10000):
+def sub(project_id, subscription_id, n_expected_messages=3, timeout=10000):
     """Receives messages from a Pub/Sub subscription."""
-    # Initialize a Subscriber client
     subscriber_client = pubsub_v1.SubscriberClient()
-    # Create a fully qualified identifier in the form of
-    # `projects/{project_id}/subscriptions/{subscription_id}`
     subscription_path = subscriber_client.subscription_path(project_id, subscription_id)
 
+    NUM_MESSAGES = 10
     n_messages = 0
 
-    while n_messages < n_expected_messages:
-        # The subscriber pulls a specific number of messages.
-        response = subscriber_client.pull(subscription_path, max_messages=1)
+    with subscriber_client:
+        while n_messages < n_expected_messages:
+            # The subscriber pulls a specific number of messages.
+            response = subscriber_client.pull(subscription_path, max_messages=NUM_MESSAGES)
+            n_messages = n_messages + len(response.received_messages)
 
-        ack_ids = []
-        n_messages += len(response.received_messages)
+            ack_ids = []
+            for received_message in response.received_messages:
+                print("Received: {}".format(received_message.message.data))
+                logging.info("Received: {}".format(received_message.message.data))
+                ack_ids.append(received_message.ack_id)
 
-        for received_message in response.received_messages:
-            logging.info("Received: {}".format(received_message.message.data))
-            ack_ids.append(received_message.ack_id)
+            # Acknowledges the received messages so they will not be sent again.
+            subscriber_client.acknowledge(subscription_path, ack_ids)
 
-        # Acknowledges the received messages so they will not be sent again.
-        subscriber_client.acknowledge(subscription_path, ack_ids)
-
-        logging.info(
-            "Received and acknowledged {} messages. Done.".format(
-                len(response.received_messages)
+            print(
+                "Received and acknowledged {} messages. Done.".format(
+                    len(response.received_messages)
+                )
             )
-        )
-        
-    subscriber_client.close()
 
-def sub2(project_id, subscription_id):
-    """Receives messages from a Pub/Sub subscription."""
-    # [START pubsub_quickstart_sub_client]
-    # Initialize a Subscriber client
-    subscriber_client = pubsub_v1.SubscriberClient()
-    # [END pubsub_quickstart_sub_client]
-    # Create a fully qualified identifier in the form of
-    # `projects/{project_id}/subscriptions/{subscription_id}`
-    subscription_path = subscriber_client.subscription_path(project_id, subscription_id)
-
-    def callback(message):
-        print(
-            "Received message {} of message ID {}\n".format(message, message.message_id)
-        )
-        # Acknowledge the message. Unack'ed messages will be redelivered.
-        message.ack()
-        print("Acknowledged message {}\n".format(message.message_id))
-
-    streaming_pull_future = subscriber_client.subscribe(
-        subscription_path, callback=callback
-    )
-    print("Listening for messages on {}..\n".format(subscription_path))
-
-    try:
-        # Calling result() on StreamingPullFuture keeps the main thread from
-        # exiting while messages get processed in the callbacks.
-        streaming_pull_future.result()
-    except:  # noqa
-        streaming_pull_future.cancel()
-
-    subscriber_client.close()
 
 def write_messages_to_tsv(files, n_total_messages, bucket_name, authz_file=None):
     """
@@ -146,6 +112,6 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
     if args.action == "create_manifest":
-        #files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
-        sub2(args.project_id, args.subscription_id)
+        files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
+
         #write_messages_to_tsv(files, args.bucket_name, args.authz_file)
