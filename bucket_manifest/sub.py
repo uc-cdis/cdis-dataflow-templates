@@ -88,7 +88,7 @@ def sub(project_id, subscription_id, n_expected_messages=1):
 
 def write_messages_to_tsv(files, bucket_name, authz_file=None):
     """
-    Consume the sqs and write results to tsv manifest
+    Consume the subscription and write results to tsv manifest
     Args:
         files(dict): a dictionary of object files
             {
