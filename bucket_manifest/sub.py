@@ -42,6 +42,38 @@ def sub(project_id, subscription_id, n_expected_messages, timeout=10000):
         
     subscriber_client.close()
 
+def sub2(project_id, subscription_id):
+    """Receives messages from a Pub/Sub subscription."""
+    # [START pubsub_quickstart_sub_client]
+    # Initialize a Subscriber client
+    subscriber_client = pubsub_v1.SubscriberClient()
+    # [END pubsub_quickstart_sub_client]
+    # Create a fully qualified identifier in the form of
+    # `projects/{project_id}/subscriptions/{subscription_id}`
+    subscription_path = subscriber_client.subscription_path(project_id, subscription_id)
+
+    def callback(message):
+        print(
+            "Received message {} of message ID {}\n".format(message, message.message_id)
+        )
+        # Acknowledge the message. Unack'ed messages will be redelivered.
+        message.ack()
+        print("Acknowledged message {}\n".format(message.message_id))
+
+    streaming_pull_future = subscriber_client.subscribe(
+        subscription_path, callback=callback
+    )
+    print("Listening for messages on {}..\n".format(subscription_path))
+
+    try:
+        # Calling result() on StreamingPullFuture keeps the main thread from
+        # exiting while messages get processed in the callbacks.
+        streaming_pull_future.result()
+    except:  # noqa
+        streaming_pull_future.cancel()
+
+    subscriber_client.close()
+
 def write_messages_to_tsv(files, n_total_messages, bucket_name, authz_file=None):
     """
     Consume the sqs and write results to tsv manifest
@@ -114,5 +146,6 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
     if args.action == "create_manifest":
-        files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
-        write_messages_to_tsv(files, args.bucket_name, args.authz_file)
+        #files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
+        sub2(args.project_id, args.subscription_id)
+        #write_messages_to_tsv(files, args.bucket_name, args.authz_file)
