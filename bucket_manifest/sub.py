@@ -22,7 +22,7 @@ def sub(project_id, subscription_id, n_expected_messages, timeout=10000):
 
     while n_messages < n_expected_messages:
         # The subscriber pulls a specific number of messages.
-        response = subscriber_client.pull(subscription_path, max_messages=10)
+        response = subscriber_client.pull(subscription_path, max_messages=1)
 
         ack_ids = []
         n_messages += len(response.received_messages)
@@ -97,17 +97,22 @@ def write_messages_to_tsv(files, n_total_messages, bucket_name, authz_file=None)
 
     logging.info("DONE!!!")
 
+
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(title="action", dest="action")
+
+    bucket_manifest_cmd = subparsers.add_parser("create_manifest")
+    bucket_manifest_cmd.add_argument("--project_id", help="Google Cloud project ID")
+    bucket_manifest_cmd.add_argument("--subscription_id", help="Pub/Sub subscription ID")
+    bucket_manifest_cmd.add_argument("--n_expected_messages", type=int, help="Number of expected messages")
+    bucket_manifest_cmd.add_argument("--bucket_name", help="Output bucket name")
+    bucket_manifest_cmd.add_argument("--authz_file", required=False, help="Authz data file")
+
+    return  parser.parse_args()
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument("project_id", help="Google Cloud project ID")
-    parser.add_argument("subscription_id", help="Pub/Sub subscription ID")
-    parser.add_argument("n_expected_messages", help="Number of expected messages")
-    parser.add_argument("bucket_name", help="Output bucket name")
-    parser.add_argument("authz_file", required=False, help="Authz data file")
-
-    args = parser.parse_args()
-
-    files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
-    write_messages_to_tsv(files, args.bucket_name, args.authz_file)
+    args = parse_arguments()
+    if args.action == "create_manifest":
+        files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
+        write_messages_to_tsv(files, args.bucket_name, args.authz_file)
