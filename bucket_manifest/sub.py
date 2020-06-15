@@ -3,6 +3,7 @@ import argparse
 import logging
 import csv
 import json
+import time
 from datetime import datetime
 
 from urllib.parse import urlparse
@@ -13,9 +14,22 @@ import utils
 logging.basicConfig(level=logging.INFO)
 
 
-def sub(project_id, subscription_id, n_expected_messages=1, timeout=10000):
+def sub(project_id, subscription_id, n_expected_messages=1):
     """
-       Receive {n_expected_messages} messages from a Pub/Sub subscription.
+        Receive {n_expected_messages} messages from a Pub/Sub subscription.
+        
+        Args:
+            project_id(str): google project id
+            subscription_id(str): subscription id
+            n_expected_messages(int): number of expected messages
+        
+        Returns:
+            list(dict): List of dictionaries
+                {
+                    "url": "gs://bucket/object1",
+                    "md5": "test_md5",
+                    "size": 1
+                }
     """
     subscriber_client = pubsub_v1.SubscriberClient()
     # `projects/{project_id}/topics/{topic_id}`
@@ -56,15 +70,18 @@ def sub(project_id, subscription_id, n_expected_messages=1, timeout=10000):
                     )
                 ack_ids.append(received_message.ack_id)
 
-            if ack_ids:
-                # Acknowledges the received messages so they will not be sent again.
-                subscriber_client.acknowledge(subscription_path, ack_ids)
-
             logging.info(
-                "Received and acknowledged {} messages. Done.".format(
+                "Received and acknowledged {} messages.".format(
                     len(response.received_messages)
                 )
             )
+            if ack_ids:
+                # Acknowledges the received messages so they will not be sent again.
+                subscriber_client.acknowledge(subscription_path, ack_ids)
+            else:
+                # No message, take a sleep
+                time.sleep(5)
+
 
     return results
 

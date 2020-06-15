@@ -22,7 +22,6 @@ def get_callback(api_future, data, ref):
                     data, api_future.exception()
                 )
             )
-            raise
 
     return callback
 
