@@ -59,8 +59,6 @@ def get_object_md5_from_metadata(sess, bucket_name, blob_name):
             if res.status_code == 200:
                 if "md5Hash" in res.json() and res.json()["md5Hash"] != "":
                     return base64.b64decode(res.json()["md5Hash"]).hex()
-                else:
-                    return compute_md5(sess, bucket_name, blob_name)
             else:
                 logging.error(
                     f"Can not get object metadata of {blob_name}. Status code {res.status_code}"
@@ -108,7 +106,7 @@ def get_object_chunk(sess, bucket_name, blob_name, start, end):
                 headers={"Range": "bytes={}-{}".format(start, end)},
             )
             if res.status_code in [200, 206]:
-                return res
+                return res.content
         except Exception as e:
             logging.error(f"Can not get object chunk of {blob_name}. Detail {e}")
         tries += 1
@@ -122,6 +120,9 @@ def compute_md5(bucket_name, blob_name):
     """
     client = storage.Client()
     sess = AuthorizedSession(client._credentials)
+    md5 = get_object_md5_from_metadata(sess, bucket_name, blob_name)
+    if md5:
+        return md5
     size = get_object_size(sess, bucket_name, blob_name)
     sig = hashlib.md5()
     if size:
