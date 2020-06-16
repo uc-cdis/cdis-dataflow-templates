@@ -1,5 +1,5 @@
 # Google Bucket Manifest
-Repos to store code to generate the Google dataflow template and consume pubsub subscription
+Repos for storing code to generate the Google dataflow template and consume pubsub subscription
 
 ## To build a template
 
