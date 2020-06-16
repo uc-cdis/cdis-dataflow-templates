@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import base64
 import json
 import logging
 
@@ -29,7 +28,7 @@ class ComputeMD5(beam.DoFn):
         fi["size"] = int(fi["size"])
 
         try:
-            fi["md5"] = base64.b64decode(compute_md5(fi.get("bucket"), fi.get("key"))).hex()
+            fi["md5"] = compute_md5(fi.get("bucket"), fi.get("key"))
         except Exception as e:
             # store the error message
             fi["md5"] = str(e)
@@ -61,23 +60,23 @@ def run(argv=None):
     """
     # Initialize runtime parameters as object
     pipeline_options = PipelineOptions()
-    pipeline_options.view_as(SetupOptions).save_main_session = True
-    p = beam.Pipeline(options=pipeline_options)
-
-    bucket_manifest_options = pipeline_options.view_as(BucketManifestOptions)
     # Save main session state so pickled functions and classes
     # defined in __main__ can be unpickled
-
+    pipeline_options.view_as(SetupOptions).save_main_session = True
     # Beginning of the pipeline
+    p = beam.Pipeline(options=pipeline_options)
+    # Runtime Parameters given during template execution
+    bucket_manifest_options = pipeline_options.view_as(BucketManifestOptions)
+    # Get bucket objects
     blob_list = get_bucket_manifest(bucket_manifest_options.bucket)
+    # pipeline setup
     lines = p | beam.Create(blob_list)
-
     lines | "copy" >> beam.ParDo(
         ComputeMD5(
             bucket_manifest_options.project_id, bucket_manifest_options.pub_topic
         )
     )
-
+    # Run the pipeline
     prog = p.run()
     prog.wait_until_finish()
 
