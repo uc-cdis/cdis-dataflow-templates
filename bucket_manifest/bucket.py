@@ -48,6 +48,14 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
 def get_object_md5_from_metadata(sess, bucket_name, blob_name):
     """
     Get object metadata
+
+    Args:
+        sess(session): google client session
+        bucket_name(str): google bucket name
+        blob_name(str): object key
+    
+    Returns:
+        str: google object checksum
     """
     url = "https://www.googleapis.com/storage/v1/b/{}/o/{}".format(
         bucket_name, blob_name
@@ -73,6 +81,14 @@ def get_object_md5_from_metadata(sess, bucket_name, blob_name):
 def get_object_size(sess, bucket_name, blob_name):
     """
     get object metadata
+
+    Args:
+        sess(session): google client session
+        bucket_name(str): google bucket name
+        blob_name(str): object key
+    
+    Returns:
+        size(int): bucket object size
     """
     url = "https://www.googleapis.com/storage/v1/b/{}/o/{}".format(
         bucket_name, blob_name
@@ -90,9 +106,19 @@ def get_object_size(sess, bucket_name, blob_name):
     return None
 
 
-def get_object_chunk(sess, bucket_name, blob_name, start, end):
+def get_object_chunk_data(sess, bucket_name, blob_name, start, end):
     """
     get object chunk data
+
+    Args:
+        sess(session): google client session
+        bucket_name(str): google bucket name
+        blob_name(str): object key
+        start(int): start position
+        end(int): end position
+    
+    Returns:
+        list(byte): chunk data
     """
     url = "https://www.googleapis.com/storage/v1/b/{}/o/{}?alt=media".format(
         bucket_name, blob_name
@@ -129,7 +155,7 @@ def compute_md5(bucket_name, blob_name):
         start = 0
         while start < size:
             end = min(start + CHUNK_SIZE, size - 1)
-            chunk_data = get_object_chunk(sess, bucket_name, blob_name, start, end)
+            chunk_data = get_object_chunk_data(sess, bucket_name, blob_name, start, end)
             sig.update(chunk_data)
             start = end + 1
         return sig.hexdigest()

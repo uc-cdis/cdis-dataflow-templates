@@ -42,12 +42,12 @@ def write_tsv(filename, files, fieldnames=None):
 
 def upload_file(bucket_name, source_file_name, destination_blob_name):
     """
-    Upload a file to an S3 bucket
+    Upload a file to an gs bucket
     
     Args:
         file_name: File to upload
         bucket: Bucket to upload to
-        object_name: S3 object name. If not specified then file_name is used
+        object_name: gs object name. If not specified then file_name is used
     Returns:
         Bool: True if file was uploaded, else False
     """
