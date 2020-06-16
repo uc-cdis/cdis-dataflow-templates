@@ -82,7 +82,6 @@ def sub(project_id, subscription_id, n_expected_messages=1):
                 # No message, take a sleep
                 time.sleep(5)
 
-
     return results
 
 

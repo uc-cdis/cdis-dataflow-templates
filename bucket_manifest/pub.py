@@ -4,6 +4,8 @@ import logging
 
 from google.cloud import pubsub_v1
 
+logging.basicConfig(level=logging.INFO)
+
 
 def get_callback(api_future, data, ref):
     """Wrap message data in the context of the callback function."""

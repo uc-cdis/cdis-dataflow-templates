@@ -10,6 +10,7 @@ from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions
 from bucket_manifest.bucket import get_bucket_manifest, compute_md5
 from bucket_manifest.pub import pub
 
+logging.basicConfig(level=logging.INFO)
 FILE_HEADERS = ["bucket", "key", "size", "md5"]
 
 

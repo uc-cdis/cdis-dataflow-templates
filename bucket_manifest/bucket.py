@@ -1,5 +1,12 @@
-from google.cloud import storage
+import base64
+import hashlib
 import logging
+
+from google.cloud import storage
+from google.auth.transport.requests import AuthorizedSession
+
+CHUNK_SIZE = 1024 * 1024 * 64
+MAX_RETRIES = 5
 
 
 def get_bucket_manifest(bucket_name):
@@ -15,9 +22,8 @@ def get_bucket_manifest(bucket_name):
             result.append("{}\t{}\t{}".format(bucket_name, blob.name, blob.size))
     except Exception as e:
         logging.error("Can not get object list of {}. Detail {}".format(bucket_name, e))
-    
-    return result
 
+    return result
 
 
 def download_blob(bucket_name, source_blob_name, destination_file_name):
@@ -39,13 +45,91 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
         logging.error("Can not download {}. Detail {}".format(source_blob_name, e))
 
 
-def compute_md5(bucket, blob):
-    client = storage.Client()
-    try:
-        bucket = client.get_bucket(bucket)
-        blob = bucket.get_blob(blob)
-        return blob.md5_hash
-    except Exception as e:
-        logging.error("Can not compute md5 of {}. Detail {}".format(blob, e))
-        return None
+def get_object_md5_from_metadata(sess, bucket_name, blob_name):
+    """
+    Get object metadata
+    """
+    url = "https://www.googleapis.com/storage/v1/b/{}/o/{}".format(
+        bucket_name, blob_name
+    )
+    tries = 0
+    while tries < MAX_RETRIES:
+        try:
+            res = sess.request(method="GET", url=url)
+            if res.status_code == 200:
+                if "md5Hash" in res.json() and res.json()["md5Hash"] != "":
+                    return base64.b64decode(res.json()["md5Hash"]).hex()
+                else:
+                    return compute_md5(sess, bucket_name, blob_name)
+            else:
+                logging.error(
+                    f"Can not get object metadata of {blob_name}. Status code {res.status_code}"
+                )
+                break
+        except Exception as e:
+            logging.error(f"Can not get object metadata of {blob_name}. Detail {e}")
+        tries += 1
+    return None
 
+
+def get_object_size(sess, bucket_name, blob_name):
+    """
+    get object metadata
+    """
+    url = "https://www.googleapis.com/storage/v1/b/{}/o/{}".format(
+        bucket_name, blob_name
+    )
+    tries = 0
+    while tries < MAX_RETRIES:
+        try:
+            res = sess.request(method="GET", url=url)
+            if res.status_code == 200:
+                return int(res.json()["size"])
+        except Exception as e:
+            logging.error(f"Can not get object size of {blob_name}. Detail {e}")
+        tries += 1
+
+    return None
+
+
+def get_object_chunk(sess, bucket_name, blob_name, start, end):
+    """
+    get object chunk data
+    """
+    url = "https://www.googleapis.com/storage/v1/b/{}/o/{}?alt=media".format(
+        bucket_name, blob_name
+    )
+    tries = 0
+    while tries < MAX_RETRIES:
+        try:
+            res = sess.request(
+                method="GET",
+                url=url,
+                headers={"Range": "bytes={}-{}".format(start, end)},
+            )
+            if res.status_code in [200, 206]:
+                return res
+        except Exception as e:
+            logging.error(f"Can not get object chunk of {blob_name}. Detail {e}")
+        tries += 1
+
+    return None
+
+
+def compute_md5(bucket_name, blob_name):
+    """
+    Compute md5 of a bucket object
+    """
+    client = storage.Client()
+    sess = AuthorizedSession(client._credentials)
+    size = get_object_size(sess, bucket_name, blob_name)
+    sig = hashlib.md5()
+    if size:
+        start = 0
+        while start < size:
+            end = min(start + CHUNK_SIZE, size - 1)
+            chunk_data = get_object_chunk(sess, bucket_name, blob_name, start, end)
+            sig.update(chunk_data)
+            start = end + 1
+        return sig.hexdigest()
+    return None
