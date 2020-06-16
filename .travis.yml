@@ -1,0 +1,16 @@
+language: python
+
+python:
+  - "3.6"
+
+cache: pip
+
+before_install:
+    - gem install rake
+
+install:
+  - pip install -r requirements.txt
+  - pip install -r dev-requirements.txt
+
+script:
+  - py.test -vv tests/
