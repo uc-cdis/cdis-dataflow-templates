@@ -8,6 +8,8 @@ from google.auth.transport.requests import AuthorizedSession
 CHUNK_SIZE = 1024 * 1024 * 64
 MAX_RETRIES = 5
 
+logging.basicConfig(level=logging.INFO)
+
 
 def get_bucket_manifest(bucket_name):
     """
@@ -158,5 +160,6 @@ def compute_md5(bucket_name, blob_name):
             chunk_data = get_object_chunk_data(sess, bucket_name, blob_name, start, end)
             sig.update(chunk_data)
             start = end + 1
+            logging.info(f"Progress: {start*1.0/size*100}%")
         return sig.hexdigest()
     return None
