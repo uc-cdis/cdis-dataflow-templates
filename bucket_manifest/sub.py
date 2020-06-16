@@ -49,7 +49,7 @@ def sub(project_id, subscription_id, n_expected_messages=1):
             n_messages = n_messages + len(response.received_messages)
 
             ack_ids = []
-            # Pull messages from
+            # Pull messages from the subscription
             for received_message in response.received_messages:
                 data = received_message.message.data
                 logging.info("Received: {}".format(data))
@@ -131,13 +131,17 @@ def write_messages_to_tsv(files, bucket_name, authz_file=None):
             ]
 
     if len(files) > 0:
+        # part the url
         parts = urlparse(files[0]["url"])
+        
+        # generate unique manifest output
         now = datetime.now()
         current_time = now.strftime("%m_%d_%y_%H:%M:%S")
-
         filename = "manifest_{}_{}.tsv".format(parts.netloc, current_time)
-        utils.write_tsv(filename, files, fields)
 
+        # write list of object metadata to a file
+        utils.write_tsv(filename, files, fields)
+        # Upload the file to google bucket
         utils.upload_file(bucket_name, filename, filename)
 
         logging.info(

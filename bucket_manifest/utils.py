@@ -26,11 +26,14 @@ def write_tsv(filename, files, fieldnames=None):
 
     if not files:
         return None
+    # Get column names
     fieldnames = fieldnames or files[0].keys()
+    # Open tsv file
     with open(filename, mode="w") as outfile:
         writer = csv.DictWriter(outfile, delimiter="\t", fieldnames=fieldnames)
+        # write header
         writer.writeheader()
-
+        # Write data
         for f in files:
             for field in fieldnames:
                 if field not in f:
@@ -51,11 +54,15 @@ def upload_file(bucket_name, source_file_name, destination_blob_name):
     Returns:
         Bool: True if file was uploaded, else False
     """
+    # Initialize a storage client.
     storage_client = storage.Client()
 
     try:
+        # Initialize a bucket client.
         bucket = storage_client.bucket(bucket_name)
+        # Create a dest blob.
         blob = bucket.blob(destination_blob_name)
+        # Upload file to the bucket
         blob.upload_from_filename(source_file_name)
 
     except Exception as e:
