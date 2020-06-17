@@ -71,7 +71,7 @@ def run(argv=None):
     blob_list = get_bucket_manifest(bucket_manifest_options.bucket)
     # pipeline setup
     lines = p | beam.Create(blob_list)
-    lines | "copy" >> beam.ParDo(
+    lines | "compute_md5" >> beam.ParDo(
         ComputeMD5(
             bucket_manifest_options.project_id, bucket_manifest_options.pub_topic
         )
