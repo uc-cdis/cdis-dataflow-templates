@@ -7,7 +7,7 @@ from google.cloud import pubsub_v1
 logging.basicConfig(level=logging.INFO)
 
 
-def get_callback(api_future, data, ref):
+def get_callback(api_future, data):
     """Wrap message data in the context of the callback function."""
 
     def callback(api_future):
@@ -17,7 +17,6 @@ def get_callback(api_future, data, ref):
                     data, api_future.result()
                 )
             )
-            ref["num_messages"] += 1
         except Exception:
             logging.error(
                 "A problem occurred when publishing {}: {}\n".format(
@@ -39,15 +38,11 @@ def pub(project_id, topic_id, data):
     # `projects/{project_id}/topics/{topic_id}`
     topic_path = client.topic_path(project_id, topic_id)
 
-    # Keep track of the number of published messages.
-    ref = dict({"num_messages": 0})
-
     # When you publish a message, the client returns a future.
     api_future = client.publish(topic_path, data=data)
-    api_future.add_done_callback(get_callback(api_future, data, ref))
+    api_future.add_done_callback(get_callback(api_future, data))
 
     # Keep the main thread from exiting while the message future
     # gets resolved in the background.
     while api_future.running():
         time.sleep(0.5)
-        logging.debug("Published {} message(s).".format(ref["num_messages"]))

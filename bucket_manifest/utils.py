@@ -74,6 +74,6 @@ def upload_file(bucket_name, source_file_name, destination_blob_name):
         return False
 
     logging.info(
-        "File {} uploaded to {}.".format(source_file_name, destination_blob_name)
+        "File {} uploaded to {}/{}.".format(source_file_name, bucket_name, destination_blob_name)
     )
     return True

@@ -85,7 +85,7 @@ def sub(project_id, subscription_id, n_expected_messages=1):
     return results
 
 
-def write_messages_to_tsv(files, bucket_name, authz_file=None):
+def write_messages_to_tsv(files, bucket_name, metadata_file=None):
     """
     Consume the subscription and write results to tsv manifest
     Args:
@@ -96,20 +96,20 @@ def write_messages_to_tsv(files, bucket_name, authz_file=None):
                 "size": 1
             }
         bucket_name(str): bucket for uploading the manifest to
-        authz_file(str): authz data file
+        metadata_file(str): metadata file for merging
     """
-    authz_objects = {}
+    metadata_info = {}
     # Default filenames without merging
     fields = ["url", "size", "md5"]
 
-    # merge authz info from file
-    if authz_file:
-        with open(authz_file, "rt") as csvfile:
+    # merge extra metadata info from file
+    if metadata_file:
+        with open(metadata_file, "rt") as csvfile:
             csvReader = csv.DictReader(csvfile, delimiter="\t")
             # Build a map with url as the key
             for row in csvReader:
                 if "url" in row:
-                    authz_objects[row["url"]] = {
+                    metadata_info[row["url"]] = {
                         k: v for k, v in row.items() if k != "url"
                     }
 
@@ -117,10 +117,10 @@ def write_messages_to_tsv(files, bucket_name, authz_file=None):
         need_merge = False
         first_row_need_merge = None
         for row_num, fi in enumerate(files):
-            if fi["url"] in authz_objects:
+            if fi["url"] in metadata_info:
                 need_merge = True
                 first_row_need_merge = first_row_need_merge or row_num
-                for k, v in authz_objects[fi["url"]].items():
+                for k, v in metadata_info[fi["url"]].items():
                     fi[k] = v
         if files and need_merge:
             # add new fields
@@ -144,10 +144,6 @@ def write_messages_to_tsv(files, bucket_name, authz_file=None):
         # Upload the file to google bucket
         utils.upload_file(bucket_name, filename, filename)
 
-        logging.info(
-            "Output manifest is stored at gs://{}/{}".format(bucket_name, filename)
-        )
-
     logging.info("DONE!!!")
 
 
@@ -165,7 +161,7 @@ def parse_arguments():
     )
     bucket_manifest_cmd.add_argument("--bucket_name", help="Output bucket name")
     bucket_manifest_cmd.add_argument(
-        "--authz_file", required=False, help="Authz data file"
+        "--metadata_file", required=False, help="Metadata file for merging"
     )
 
     return parser.parse_args()
@@ -175,4 +171,4 @@ if __name__ == "__main__":
     args = parse_arguments()
     if args.action == "create_manifest":
         files = sub(args.project_id, args.subscription_id, args.n_expected_messages)
-        write_messages_to_tsv(files, args.bucket_name, args.authz_file)
+        write_messages_to_tsv(files, args.bucket_name, args.metadata_file)

@@ -32,27 +32,6 @@ def get_bucket_manifest(bucket_name):
     return result
 
 
-def download_blob(bucket_name, source_blob_name, destination_file_name):
-    """
-    Downloads a blob from the bucket.
-    
-    Args:
-        bucket_name(str): the bucket-name
-        source_blob_name(str): the storage object name
-        destination_file_name(str): local/path/to/file
-    """
-    # Initialize a storage client.
-    storage_client = storage.Client()
-    try:
-        # Download source_blob_name 
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(source_blob_name)
-        blob.download_to_filename(destination_file_name)
-    except Exception as e:
-        # Log any exception
-        logging.error("Can not download {}. Detail {}".format(source_blob_name, e))
-
-
 def get_object_md5_from_metadata(sess, bucket_name, blob_name):
     """
     Get object metadata
@@ -75,7 +54,7 @@ def get_object_md5_from_metadata(sess, bucket_name, blob_name):
             res = sess.request(method="GET", url=url)
             if res.status_code == 200:
                 # If md5 hash in the object metadata, return it
-                if "md5Hash" in res.json() and res.json()["md5Hash"] != "":
+                if res.json().get("md5Hash"):
                     return base64.b64decode(res.json()["md5Hash"]).hex()
             else:
                 logging.error(

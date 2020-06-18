@@ -7,8 +7,6 @@ RUN mkdir -p /usr/local/gcloud \
   && /usr/local/gcloud/google-cloud-sdk/install.sh
 ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
-RUN git clone https://github.com/vim/vim.git && cd vim/src && make && make install
-
 COPY . /google-bucket-manifest
 
 WORKDIR /google-bucket-manifest
