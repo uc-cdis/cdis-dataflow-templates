@@ -20,9 +20,7 @@ def get_bucket_manifest(bucket_name):
     # Initialize a storage client.
     storage_client = storage.Client()
     try:
-        # Initialize a bucket client.
-        bucket = storage_client.get_bucket(bucket_name)
-        blobs = bucket.list_blobs()
+        blobs = storage_client.list_blobs(bucket_name)
         for blob in blobs:
             # Keep track all the object infos
             result.append("{}\t{}\t{}".format(bucket_name, blob.name, blob.size))
