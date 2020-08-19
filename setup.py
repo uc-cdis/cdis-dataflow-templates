@@ -4,8 +4,11 @@ from __future__ import print_function
 import setuptools
 
 REQUIRED_PACKAGES = [
-    "google-cloud-storage==1.29.0",
-    "google-cloud-pubsub==1.6.0",
+    "google-api-core==1.22.1",
+    "grpcio==1.31.0",
+    "google-cloud-core==1.4.1",
+    "google-cloud-storage==1.30.0",
+    "google-cloud-pubsub==1.5.0",
     "setuptools>=40.3.0",
 ]
 
