@@ -2,6 +2,7 @@ import base64
 import hashlib
 import logging
 
+import urllib
 from google.cloud import storage
 from google.auth.transport.requests import AuthorizedSession
 
@@ -43,7 +44,7 @@ def get_object_md5_from_metadata(sess, bucket_name, blob_name):
         str: google object checksum
     """
     url = "https://www.googleapis.com/storage/v1/b/{}/o/{}".format(
-        bucket_name, blob_name
+        bucket_name, urllib.parse.quote(blob_name, safe="")
     )
     tries = 0
     while tries < MAX_RETRIES:
@@ -77,7 +78,7 @@ def get_object_size(sess, bucket_name, blob_name):
         size(int): bucket object size
     """
     url = "https://www.googleapis.com/storage/v1/b/{}/o/{}".format(
-        bucket_name, blob_name
+        bucket_name, urllib.parse.quote(blob_name, safe="")
     )
     tries = 0
     while tries < MAX_RETRIES:
@@ -109,7 +110,7 @@ def get_object_chunk_data(sess, bucket_name, blob_name, start, end):
         list(byte): chunk data
     """
     url = "https://www.googleapis.com/storage/v1/b/{}/o/{}?alt=media".format(
-        bucket_name, blob_name
+        bucket_name, urllib.parse.quote(blob_name, safe="")
     )
     tries = 0
     # Retry logic
