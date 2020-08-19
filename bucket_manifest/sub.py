@@ -71,8 +71,8 @@ def sub(project_id, subscription_id, n_expected_messages=1):
                 ack_ids.append(received_message.ack_id)
 
             logging.info(
-                "Received and acknowledged {} messages.".format(
-                    len(response.received_messages)
+                "Received and acknowledged {}/{} messages.".format(
+                    n_messages, n_expected_messages
                 )
             )
             if ack_ids:
