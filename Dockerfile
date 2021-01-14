@@ -9,6 +9,14 @@ ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 COPY . /google-bucket-manifest
 
-WORKDIR /google-bucket-manifest
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
-RUN pip install -r requirements.txt
+# cache so that poetry install will run if these files change
+COPY poetry.lock pyproject.toml /opt/ctds/qabot/
+
+# install qa-bot and dependencies via poetry
+RUN source $HOME/.poetry/env \
+    && poetry install --no-dev --no-interaction \
+    && poetry show -v
+
+WORKDIR /google-bucket-manifest
