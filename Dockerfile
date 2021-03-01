@@ -1,5 +1,8 @@
 FROM python:3.6
 
+# make sure source is available in sh (not just /bin/bash)
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 # Installing gcloud package (includes gsutil)
 RUN curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz
 RUN mkdir -p /usr/local/gcloud \
@@ -14,7 +17,7 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 # cache so that poetry install will run if these files change
 COPY poetry.lock pyproject.toml /opt/ctds/qabot/
 
-# install qa-bot and dependencies via poetry
+# install google-bucket-manifest and dependencies via poetry
 RUN source $HOME/.poetry/env \
     && poetry install --no-dev --no-interaction \
     && poetry show -v
