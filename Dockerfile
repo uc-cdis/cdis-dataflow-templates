@@ -21,9 +21,8 @@ COPY poetry.lock pyproject.toml /google-bucket-manifest/
 RUN cd google-bucket-manifest \
     && source $HOME/.poetry/env \
     && poetry install --no-dev --no-interaction \
-    && poetry show -v
-
+    && poetry show -v \
+    && poetry run poetry2setup > setup.py
 # Introduce backwards compatibility to call DataflowRunner (drops a setup.py on the disk)
-RUN poetry run poetry2setup > setup.py
 
 WORKDIR /google-bucket-manifest
