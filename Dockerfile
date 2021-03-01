@@ -15,10 +15,11 @@ COPY . /google-bucket-manifest
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
 # cache so that poetry install will run if these files change
-COPY poetry.lock pyproject.toml /opt/ctds/qabot/
+COPY poetry.lock pyproject.toml /google-bucket-manifest/
 
 # install google-bucket-manifest and dependencies via poetry
-RUN source $HOME/.poetry/env \
+RUN cd google-bucket-manifest \
+    && source $HOME/.poetry/env \
     && poetry install --no-dev --no-interaction \
     && poetry show -v
 
