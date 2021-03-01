@@ -23,4 +23,7 @@ RUN cd google-bucket-manifest \
     && poetry install --no-dev --no-interaction \
     && poetry show -v
 
+# Introduce backwards compatibility to call DataflowRunner (drops a setup.py on the disk)
+RUN poetry run poetry2setup > setup.py
+
 WORKDIR /google-bucket-manifest
