@@ -37,14 +37,6 @@ interactive_test = ["nbformat (>=5.0.5,<6)", "nbconvert (>=5.6.1,<6)", "selenium
 test = ["freezegun (>=0.3.12)", "nose (>=1.3.7)", "nose-xunitmp (>=0.4.1)", "pandas (>=1.0,<1.2.0)", "parameterized (>=0.7.1,<0.8.0)", "pyhamcrest (>=1.9,!=1.10.0,<2.0.0)", "pyyaml (>=3.12,<6.0.0)", "requests-mock (>=1.7,<2.0)", "tenacity (>=5.0.2,<6.0)", "pytest (>=4.4.0,<5.0)", "pytest-xdist (>=1.29.0,<2)", "pytest-timeout (>=1.3.3,<2)", "sqlalchemy (>=1.3,<2.0)", "psycopg2-binary (>=2.8.5,<3.0.0)", "testcontainers (>=3.0.3,<4.0.0)"]
 
 [[package]]
-name = "apitools"
-version = "0.1.4"
-description = "Tools to play with json-schema and rest apis"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "avro-python3"
 version = "1.9.2.1"
 description = "Avro is a serialization and RPC framework."
@@ -141,6 +133,17 @@ snappy = ["python-snappy"]
 zstandard = ["zstandard"]
 
 [[package]]
+name = "fasteners"
+version = "0.16"
+description = "A python package that provides useful locks."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "future"
 version = "0.18.2"
 description = "Clean single-source support for Python 3 and 2"
@@ -170,6 +173,24 @@ six = ">=1.13.0"
 grpc = ["grpcio (>=1.29.0,<2.0dev)"]
 grpcgcp = ["grpcio-gcp (>=0.2.2)"]
 grpcio-gcp = ["grpcio-gcp (>=0.2.2)"]
+
+[[package]]
+name = "google-apitools"
+version = "0.5.31"
+description = "client libraries for humans"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.dependencies]
+fasteners = ">=0.14"
+httplib2 = ">=0.8"
+oauth2client = ">=1.4.12"
+six = ">=1.12.0"
+
+[package.extras]
+cli = ["python-gflags (>=3.0.6)"]
+testing = ["mock (>=1.0.1)"]
 
 [[package]]
 name = "google-auth"
@@ -621,7 +642,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "dae2074aaaaa2587342a2e0c658b1ea8ba80e98d57be503bdcf1132240616059"
+content-hash = "f9112aa6bd489e48d28334346b7bf9933e58196492173b65d8e8902982948984"
 
 [metadata.files]
 apache-beam = [
@@ -647,9 +668,6 @@ apache-beam = [
     {file = "apache_beam-2.28.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:cd54ad9e51f55465c8d4ce2f4b53ff09f6f482af8cacd07078b3341331196d1f"},
     {file = "apache_beam-2.28.0-cp38-cp38-win32.whl", hash = "sha256:0667af2e45b39b3663683d162122985cdad22024114d63c294caa95e9398045a"},
     {file = "apache_beam-2.28.0-cp38-cp38-win_amd64.whl", hash = "sha256:2bdc54cac1c7cfce902c21d16da6c98628227cf65b8a394ae5d8b978098cbf2e"},
-]
-apitools = [
-    {file = "apitools-0.1.4.tar.gz", hash = "sha256:934f00ee57a4723b853dd572dc9ba4ef765a6e1390d739b4b3187ba3646311b9"},
 ]
 avro-python3 = [
     {file = "avro-python3-1.9.2.1.tar.gz", hash = "sha256:ca1e77a3da5ac98e8833588f71fb2e170b38e34787ee0e04920de0e9470b7d32"},
@@ -739,12 +757,20 @@ fastavro = [
     {file = "fastavro-1.3.2-cp39-cp39-win_amd64.whl", hash = "sha256:5410c1d71a17c7006b084665d99b35c30fe5df318a1db9e1a7d917a08a0c8859"},
     {file = "fastavro-1.3.2.tar.gz", hash = "sha256:665bec52628f3b9e0f5efaa2519493a3e9947a67ac00700ef06a703cf4d10ab8"},
 ]
+fasteners = [
+    {file = "fasteners-0.16-py2.py3-none-any.whl", hash = "sha256:74b6847e0a6bb3b56c8511af8e24c40e4cf7a774dfff5b251c260ed338096a4b"},
+    {file = "fasteners-0.16.tar.gz", hash = "sha256:c995d8c26b017c5d6a6de9ad29a0f9cdd57de61ae1113d28fac26622b06a0933"},
+]
 future = [
     {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
 ]
 google-api-core = [
     {file = "google-api-core-1.26.0.tar.gz", hash = "sha256:4230ec764d48ca934fe69b85cc217e31e844e176f68df93e252acd55350e730b"},
     {file = "google_api_core-1.26.0-py2.py3-none-any.whl", hash = "sha256:002e44c533299aecd9dd265d200f9eacd9957cddd2c72e2cd1cb5cea127e972d"},
+]
+google-apitools = [
+    {file = "google-apitools-0.5.31.tar.gz", hash = "sha256:4af0dd6dd4582810690251f0b57a97c1873dadfda54c5bc195844c8907624170"},
+    {file = "google_apitools-0.5.31-py2-none-any.whl", hash = "sha256:6be92c1c3e93485450420bb0e365d47eb4d8a835d03ebe1963dc6da4d39a7b0e"},
 ]
 google-auth = [
     {file = "google-auth-1.27.0.tar.gz", hash = "sha256:da5218cbf33b8461d7661d6b4ad91c12c0107e2767904d5e3ae6408031d5463e"},
