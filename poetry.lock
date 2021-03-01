@@ -8,11 +8,26 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 avro-python3 = ">=1.8.1,<1.9.2 || >1.9.2,<1.10.0"
+cachetools = {version = ">=3.1.0,<5", optional = true, markers = "extra == \"gcp\""}
 crcmod = ">=1.7,<2.0"
 dill = ">=0.3.1.1,<0.3.2"
 fastavro = ">=0.21.4,<2"
 future = ">=0.18.2,<1.0.0"
+google-apitools = {version = ">=0.5.31,<0.5.32", optional = true, markers = "extra == \"gcp\""}
+google-auth = {version = ">=1.18.0,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-bigquery = {version = ">=1.6.0,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-bigtable = {version = ">=0.31.1,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-build = {version = ">=2.0.0,<3", optional = true, markers = "extra == \"gcp\""}
+google-cloud-core = {version = ">=0.28.1,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-datastore = {version = ">=1.7.1,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-dlp = {version = ">=0.12.0,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-language = {version = ">=1.3.0,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-pubsub = {version = ">=0.39.0,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-spanner = {version = ">=1.13.0,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-videointelligence = {version = ">=1.8.0,<2", optional = true, markers = "extra == \"gcp\""}
+google-cloud-vision = {version = ">=0.38.0,<2", optional = true, markers = "extra == \"gcp\""}
 grpcio = ">=1.29.0,<2"
+grpcio-gcp = {version = ">=0.2.2,<1", optional = true, markers = "extra == \"gcp\""}
 hdfs = ">=2.1.0,<3.0.0"
 httplib2 = ">=0.8,<0.18.0"
 mock = ">=1.0.1,<3.0.0"
@@ -163,6 +178,7 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 google-auth = ">=1.21.1,<2.0dev"
 googleapis-common-protos = ">=1.6.0,<2.0dev"
 grpcio = {version = ">=1.29.0,<2.0dev", optional = true, markers = "extra == \"grpc\""}
+grpcio-gcp = {version = ">=0.2.2", optional = true, markers = "extra == \"grpcgcp\""}
 packaging = ">=14.3"
 protobuf = ">=3.12.0"
 pytz = "*"
@@ -211,6 +227,55 @@ aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)"]
 pyopenssl = ["pyopenssl (>=20.0.0)"]
 
 [[package]]
+name = "google-cloud-bigquery"
+version = "1.28.0"
+description = "Google BigQuery API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = ">=1.21.0,<2.0dev"
+google-cloud-core = ">=1.4.1,<2.0dev"
+google-resumable-media = ">=0.6.0,<2.0dev"
+six = ">=1.13.0,<2.0.0dev"
+
+[package.extras]
+all = ["google-cloud-bigquery-storage (>=1.0.0,<2.0.0dev)", "grpcio (>=1.32.0,<2.0dev)", "pyarrow (>=1.0.0,<2.0dev)", "pandas (>=0.23.0)", "tqdm (>=4.7.4,<5.0.0dev)", "opentelemetry-api (==0.9b0)", "opentelemetry-sdk (==0.9b0)", "opentelemetry-instrumentation (==0.9b0)", "pyarrow (>=0.16.0,<0.17.0dev)", "pyarrow (>=1.0.0,<2.0de)"]
+bqstorage = ["google-cloud-bigquery-storage (>=1.0.0,<2.0.0dev)", "grpcio (>=1.32.0,<2.0dev)", "pyarrow (>=1.0.0,<2.0dev)"]
+fastparquet = ["fastparquet", "python-snappy", "llvmlite (<=0.31.0)", "llvmlite (<=0.34.0)"]
+opentelemetry = ["opentelemetry-api (==0.9b0)", "opentelemetry-sdk (==0.9b0)", "opentelemetry-instrumentation (==0.9b0)"]
+pandas = ["pandas (>=0.23.0)"]
+pyarrow = ["pyarrow (>=0.16.0,<0.17.0dev)", "pyarrow (>=1.0.0,<2.0de)"]
+tqdm = ["tqdm (>=4.7.4,<5.0.0dev)"]
+
+[[package]]
+name = "google-cloud-bigtable"
+version = "1.7.0"
+description = "Google Cloud Bigtable API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"]}
+google-cloud-core = ">=1.4.1,<2.0dev"
+grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
+
+[[package]]
+name = "google-cloud-build"
+version = "2.0.0"
+description = "Google Cloud Build API client library"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+google-api-core = {version = ">=1.22.0,<2.0.0dev", extras = ["grpc"]}
+libcst = ">=0.2.5"
+proto-plus = ">=0.4.0"
+
+[[package]]
 name = "google-cloud-core"
 version = "1.6.0"
 description = "Google Cloud API client core library"
@@ -227,18 +292,66 @@ six = ">=1.12.0"
 grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
+name = "google-cloud-datastore"
+version = "1.15.3"
+description = "Google Cloud Datastore API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"]}
+google-cloud-core = ">=1.4.0,<2.0dev"
+
+[[package]]
+name = "google-cloud-dlp"
+version = "1.0.0"
+description = "Cloud Data Loss Prevention (DLP) API API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"]}
+
+[[package]]
+name = "google-cloud-language"
+version = "1.3.0"
+description = "Google Cloud Natural Language API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"]}
+
+[[package]]
 name = "google-cloud-pubsub"
-version = "2.4.0"
+version = "1.7.0"
 description = "Google Cloud Pub/Sub API client library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
 
 [package.dependencies]
-google-api-core = {version = ">=1.22.2,<2.0.0dev", extras = ["grpc"]}
+google-api-core = {version = ">=1.14.0,<1.17.0 || >=1.20.0", extras = ["grpc"]}
 grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
-libcst = ">=0.3.10"
-proto-plus = ">=1.7.1"
+
+[[package]]
+name = "google-cloud-spanner"
+version = "1.19.1"
+description = "Cloud Spanner API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc", "grpcgcp"]}
+google-cloud-core = ">=1.4.1,<2.0dev"
+grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
+
+[package.extras]
+tracing = ["opentelemetry-api (==0.11b0)", "opentelemetry-sdk (==0.11b0)", "opentelemetry-instrumentation (==0.11b0)"]
 
 [[package]]
 name = "google-cloud-storage"
@@ -253,6 +366,28 @@ google-auth = ">=1.11.0,<2.0dev"
 google-cloud-core = ">=1.4.1,<2.0dev"
 google-resumable-media = ">=1.2.0,<2.0dev"
 requests = ">=2.18.0,<3.0.0dev"
+
+[[package]]
+name = "google-cloud-videointelligence"
+version = "1.16.1"
+description = "Google Cloud Video Intelligence API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"]}
+
+[[package]]
+name = "google-cloud-vision"
+version = "1.0.0"
+description = "Cloud Vision API API client library"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[package.dependencies]
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"]}
 
 [[package]]
 name = "google-crc32c"
@@ -324,6 +459,17 @@ six = ">=1.5.2"
 
 [package.extras]
 protobuf = ["grpcio-tools (>=1.36.0)"]
+
+[[package]]
+name = "grpcio-gcp"
+version = "0.2.2"
+description = "gRPC extensions for Google Cloud Platform"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+grpcio = ">=1.12.0"
 
 [[package]]
 name = "hdfs"
@@ -691,7 +837,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "7d93c347ac5f4efb87ee4cf54af841c314024bf8b73c6cf93517b0751313c903"
+content-hash = "869a56b77c6c2454974029a7139b4d7a8afb99c32a1fc7d78587c70ea57b8edf"
 
 [metadata.files]
 apache-beam = [
@@ -825,17 +971,53 @@ google-auth = [
     {file = "google-auth-1.27.0.tar.gz", hash = "sha256:da5218cbf33b8461d7661d6b4ad91c12c0107e2767904d5e3ae6408031d5463e"},
     {file = "google_auth-1.27.0-py2.py3-none-any.whl", hash = "sha256:d3640ea61ee025d5af00e3ffd82ba0a06dd99724adaf50bdd52f49daf29f3f65"},
 ]
+google-cloud-bigquery = [
+    {file = "google-cloud-bigquery-1.28.0.tar.gz", hash = "sha256:9784cff71d6a46ce202748169f9c7e38fc99d6babbb2f3cdc540475d11f572b9"},
+    {file = "google_cloud_bigquery-1.28.0-py2.py3-none-any.whl", hash = "sha256:9266e989531f290d3b836dc7b308ac22b350c4d664af19325bd0102261231b71"},
+]
+google-cloud-bigtable = [
+    {file = "google-cloud-bigtable-1.7.0.tar.gz", hash = "sha256:90bd53a19c33c34101b8567c82a6dc0386af4118d70e1ad69b49375358a21aa6"},
+    {file = "google_cloud_bigtable-1.7.0-py2.py3-none-any.whl", hash = "sha256:e372b72c573309cb4f2b9998baac5d881ba023bae500841683e8d0849641f955"},
+]
+google-cloud-build = [
+    {file = "google-cloud-build-2.0.0.tar.gz", hash = "sha256:5b6a4e5aa029858b579871f874ed47a18e25ab6510c33c24bd6466bf720bbb1c"},
+    {file = "google_cloud_build-2.0.0-py2.py3-none-any.whl", hash = "sha256:3ef25489bae0b4a486ff73a51dec70c362a66f0bf83f7f72aaab19864405741c"},
+]
 google-cloud-core = [
     {file = "google-cloud-core-1.6.0.tar.gz", hash = "sha256:c6abb18527545379fc82efc4de75ce9a3772ccad2fc645adace593ba097cbb02"},
     {file = "google_cloud_core-1.6.0-py2.py3-none-any.whl", hash = "sha256:40d9c2da2d03549b5ac3dcccf289d4f15e6d1210044c6381ce45c92913e62904"},
 ]
+google-cloud-datastore = [
+    {file = "google-cloud-datastore-1.15.3.tar.gz", hash = "sha256:3da44b4c8230a83e69dd9429324cca9d3000ee8a8bb11f3b005c7837fcd844b3"},
+    {file = "google_cloud_datastore-1.15.3-py2.py3-none-any.whl", hash = "sha256:961b75b1d4b09eb044fc59825633efd8495471bf9bc015d989b8639be89ce439"},
+]
+google-cloud-dlp = [
+    {file = "google-cloud-dlp-1.0.0.tar.gz", hash = "sha256:2ccf04209f96b4759d8ed76da2c916a456386836caacd47ce01b6344f5b8f212"},
+    {file = "google_cloud_dlp-1.0.0-py2.py3-none-any.whl", hash = "sha256:e0c57337c3fbe2bf22cc4d4deaf3d58a21603718301ee9ee4806b49f59a52e5a"},
+]
+google-cloud-language = [
+    {file = "google-cloud-language-1.3.0.tar.gz", hash = "sha256:2772badf8fe8ac57cd7e7840a60764603b3e19e6dbd843460a5ae8915798b32f"},
+    {file = "google_cloud_language-1.3.0-py2.py3-none-any.whl", hash = "sha256:76e349fcc223c66b9aa138e05853f4bf550f0d06e37641c2c206dc2661b83f30"},
+]
 google-cloud-pubsub = [
-    {file = "google-cloud-pubsub-2.4.0.tar.gz", hash = "sha256:ff9933573dadb02176dc514662354949d0ea784cc4588d22226c2bf7eb90e797"},
-    {file = "google_cloud_pubsub-2.4.0-py2.py3-none-any.whl", hash = "sha256:2813fdd93585e5fcff5d45f1f5e79bb79d735c2b621d9d2d6d4cfaaec0e62643"},
+    {file = "google-cloud-pubsub-1.7.0.tar.gz", hash = "sha256:c8d098ebd208d00c8f3bb55eefecd8553e7391d59700426a97d35125f0dcb248"},
+    {file = "google_cloud_pubsub-1.7.0-py2.py3-none-any.whl", hash = "sha256:b7f577621f991b513034c50f3314ef66838701b3b0dd1fca0d5e9a0e82f9f801"},
+]
+google-cloud-spanner = [
+    {file = "google-cloud-spanner-1.19.1.tar.gz", hash = "sha256:50c375d8224415b7b7cc19a720c745cd8fb49144db50b252d06c42121374312d"},
+    {file = "google_cloud_spanner-1.19.1-py2.py3-none-any.whl", hash = "sha256:ff6869e50eb284854fec864fcaa26139c04ded7ed522ae488fff3b08ffc5dc30"},
 ]
 google-cloud-storage = [
     {file = "google-cloud-storage-1.36.1.tar.gz", hash = "sha256:b63f31f3ec51797fce682ef4f6b7323f8b99e9ca0b21092801b1b8d25017f58a"},
     {file = "google_cloud_storage-1.36.1-py2.py3-none-any.whl", hash = "sha256:e3227abe57122370df02f00b8a6d78da6d41a0df4e6864b7f65a3a4ae673a8a7"},
+]
+google-cloud-videointelligence = [
+    {file = "google-cloud-videointelligence-1.16.1.tar.gz", hash = "sha256:bbde4a5bb479f60466dabad67d5debb30448bb2451b67bba3bfd9b67281a230a"},
+    {file = "google_cloud_videointelligence-1.16.1-py2.py3-none-any.whl", hash = "sha256:98a5d043d4824ad0529f8c2a3108bc4e1ed530e76314ea2c0e39f3d81cdf378e"},
+]
+google-cloud-vision = [
+    {file = "google-cloud-vision-1.0.0.tar.gz", hash = "sha256:18e78b190c81d200ae4f6a46d4af57422d68b3b05b0540d5cd1806e3874142bf"},
+    {file = "google_cloud_vision-1.0.0-py2.py3-none-any.whl", hash = "sha256:e61091a52f334a20e597b74e2fb42c9f27dda25323544cd157d6110fde26c9a6"},
 ]
 google-crc32c = [
     {file = "google-crc32c-1.1.2.tar.gz", hash = "sha256:dff5bd1236737f66950999d25de7a78144548ebac7788d30ada8c1b6ead60b27"},
@@ -926,6 +1108,10 @@ grpcio = [
     {file = "grpcio-1.36.0-cp39-cp39-win32.whl", hash = "sha256:3df178bec684a8ccd61fe1f1e8bf0af14875c2d5a7c2fb23a9d4cff48aba512a"},
     {file = "grpcio-1.36.0-cp39-cp39-win_amd64.whl", hash = "sha256:b93f399a76c4fa1c8ce8a77845e52f1ce0553bca7e50120656a040774f7f5174"},
     {file = "grpcio-1.36.0.tar.gz", hash = "sha256:70b11805bc9385fcd24e15bcdc5bd8bed463026cd2227d9fdd1ebda612ba0cd9"},
+]
+grpcio-gcp = [
+    {file = "grpcio-gcp-0.2.2.tar.gz", hash = "sha256:e292605effc7da39b7a8734c719afb12ec4b5362add3528d8afad3aa3aa9057c"},
+    {file = "grpcio_gcp-0.2.2-py2.py3-none-any.whl", hash = "sha256:1ef8e8531eab11356a3eb4c5b84e79e0d923d6782d19e1b1a45e1cabe4e783d7"},
 ]
 hdfs = [
     {file = "hdfs-2.6.0-py3-none-any.whl", hash = "sha256:05912125cfc68075387f271654dac185dc1aba8b347519f6a14d1395e39d7749"},

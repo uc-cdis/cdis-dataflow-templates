@@ -13,11 +13,10 @@ python = "^3.6"
 google-api-core = "^1.26.0"
 google-cloud-storage = "^1.36.1"
 google-cloud-core = "^1.6.0"
-google-cloud-pubsub = "^2.4.0"
 setuptools = "^54.0.0"
-apache-beam = "^2.28.0"
 google-apitools = "^0.5.31"
 poetry2setup = "^1.0.0"
+apache-beam = {extras = ["gcp"], version = "^2.28.0"}
 
 
 [tool.poetry.dev-dependencies]
