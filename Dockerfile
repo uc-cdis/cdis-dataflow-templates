@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.9.0rc1
 
 # make sure source is available in sh (not just /bin/bash)
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
