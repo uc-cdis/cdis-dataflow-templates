@@ -5,7 +5,7 @@ import setuptools
 
 REQUIRED_PACKAGES = [
     "google-api-core==1.20.0",
-    "grpcio==1.29.0",
+    "grpcio==1.53.0",
     "google-cloud-core==1.3.0",
     "google-cloud-storage==1.28.0",
     "google-cloud-pubsub==1.6.0",
